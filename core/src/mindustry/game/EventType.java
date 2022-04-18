@@ -33,6 +33,7 @@ public class EventType{
         socketConfigChanged,
         update,
         draw,
+        drawOver,
         preDraw,
         postDraw,
         uiDrawBegin,
@@ -50,6 +51,7 @@ public class EventType{
     public static class ResizeEvent{}
     public static class MapMakeEvent{}
     public static class MapPublishEvent{}
+    public static class SaveWriteEvent{}
     public static class SaveLoadEvent{}
     public static class ClientCreateEvent{}
     public static class ServerLoadEvent{}
@@ -70,6 +72,8 @@ public class EventType{
     public static class ContentInitEvent{}
     /** Called when the client game is first loaded. */
     public static class ClientLoadEvent{}
+    /** Called after SoundControl registers its music. */
+    public static class MusicRegisterEvent{}
     /** Called *after* all the modded files have been added into Vars.tree */
     public static class FileTreeInitEvent{}
     /** Called when a game begins and the world is loaded. */
@@ -232,6 +236,24 @@ public class EventType{
         }
 
         public PickupEvent(Unit carrier, Building build){
+            this.carrier = carrier;
+            this.build = build;
+            this.unit = null;
+        }
+    }
+
+    public static class PayloadDropEvent{
+        public final Unit carrier;
+        public final @Nullable Unit unit;
+        public final @Nullable Building build;
+
+        public PayloadDropEvent(Unit carrier, Unit unit){
+            this.carrier = carrier;
+            this.unit = unit;
+            this.build = null;
+        }
+
+        public PayloadDropEvent(Unit carrier, Building build){
             this.carrier = carrier;
             this.build = build;
             this.unit = null;
@@ -476,7 +498,19 @@ public class EventType{
         }
     }
 
-    /** Called after connecting; when a player receives world data and is ready to play.*/
+    /**
+     * Called after player confirmed it has received world data and is ready to play.
+     * Note that if this is the first world receival, then player.con.hasConnected is false.
+     */
+    public static class PlayerConnectionConfirmed{
+        public final Player player;
+
+        public PlayerConnectionConfirmed(Player player){
+            this.player = player;
+        }
+    }
+
+    /** Called after connecting; when a player receives world data and is ready to play. Fired only once, after initial connection. */
     public static class PlayerJoin{
         public final Player player;
 
@@ -501,7 +535,7 @@ public class EventType{
             this.player = player;
         }
     }
-    
+
     public static class PlayerBanEvent{
         @Nullable
         public final Player player;
@@ -512,7 +546,7 @@ public class EventType{
             this.uuid = uuid;
         }
     }
-    
+
     public static class PlayerUnbanEvent{
         @Nullable
         public final Player player;
@@ -523,7 +557,7 @@ public class EventType{
             this.uuid = uuid;
         }
     }
-    
+
     public static class PlayerIpBanEvent{
         public final String ip;
 
@@ -531,7 +565,7 @@ public class EventType{
             this.ip = ip;
         }
     }
-    
+
     public static class PlayerIpUnbanEvent{
         public final String ip;
 
@@ -539,6 +573,16 @@ public class EventType{
             this.ip = ip;
         }
     }
-    
-}
 
+    public static class AdminRequestEvent{
+        public final Player player;
+        public final @Nullable Player other;
+        public final AdminAction action;
+
+        public AdminRequestEvent(Player player, Player other, AdminAction action){
+            this.player = player;
+            this.other = other;
+            this.action = action;
+        }
+    }
+}

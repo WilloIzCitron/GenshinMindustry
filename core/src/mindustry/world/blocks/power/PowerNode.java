@@ -43,6 +43,7 @@ public class PowerNode extends PowerBlock{
         swapDiagonalPlacement = true;
         schematicPriority = -10;
         drawDisabled = false;
+        envEnabled |= Env.space;
 
         config(Integer.class, (entity, value) -> {
             PowerModule power = entity.power;
@@ -83,8 +84,6 @@ public class PowerNode extends PowerBlock{
         });
 
         config(Point2[].class, (tile, value) -> {
-            tile.power.links.clear();
-
             IntSeq old = new IntSeq(tile.power.links);
 
             //clear old
@@ -348,7 +347,7 @@ public class PowerNode extends PowerBlock{
     public static boolean insulated(int x, int y, int x2, int y2){
         return world.raycast(x, y, x2, y2, (wx, wy) -> {
             Building tile = world.build(wx, wy);
-            return tile != null && tile.block.insulated;
+            return tile != null && tile.isInsulated();
         });
     }
 
@@ -356,7 +355,7 @@ public class PowerNode extends PowerBlock{
 
         @Override
         public void placed(){
-            if(net.client()) return;
+            if(net.client() || power.links.size > 0) return;
 
             getPotentialLinks(tile, team, other -> {
                 if(!power.links.contains(other.pos())){
@@ -385,15 +384,15 @@ public class PowerNode extends PowerBlock{
                 return false;
             }
 
-            if(this == other){
-                if(other.power.links.size == 0){
+            if(this == other){ //double tapped
+                if(other.power.links.size == 0 || Core.input.shift()){ //find links
                     int[] total = {0};
                     getPotentialLinks(tile, team, link -> {
                         if(!insulated(this, link) && total[0]++ < maxNodes){
                             configure(link.pos());
                         }
                     });
-                }else{
+                }else{ //clear links
                     while(power.links.size > 0){
                         configure(power.links.get(0));
                     }
@@ -443,7 +442,7 @@ public class PowerNode extends PowerBlock{
         public void draw(){
             super.draw();
 
-            if(Mathf.zero(Renderer.laserOpacity)) return;
+            if(Mathf.zero(Renderer.laserOpacity) || isPayload()) return;
 
             Draw.z(Layer.power);
             setupColor(power.graph.getSatisfaction());

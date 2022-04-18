@@ -20,9 +20,12 @@ public class StorageBlock extends Block{
         solid = true;
         update = false;
         destructible = true;
+        separateItemCapacity = true;
         group = BlockGroup.transportation;
         flags = EnumSet.of(BlockFlag.storage);
         allowResupply = true;
+        envEnabled = Env.any;
+        highUnloadPriority = true;
     }
 
     @Override
@@ -81,7 +84,7 @@ public class StorageBlock extends Block{
 
         @Override
         public int getMaximumAccepted(Item item){
-            return itemCapacity;
+            return linkedCore != null ? linkedCore.getMaximumAccepted(item) : itemCapacity;
         }
 
         @Override

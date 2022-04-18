@@ -323,7 +323,10 @@ public class ModsDialog extends BaseDialog{
     }
 
     private void reload(){
-        ui.showInfoOnHidden("@mods.reloadexit", () -> Core.app.exit());
+        ui.showInfoOnHidden("@mods.reloadexit", () -> {
+            Log.info("Exiting to reload mods.");
+            Core.app.exit();
+        });
     }
 
     private void showMod(LoadedMod mod){
@@ -381,7 +384,7 @@ public class ModsDialog extends BaseDialog{
 
                         }).tooltip(c.localizedName);
 
-                        if(++i % Math.min(Core.graphics.getWidth() / Scl.scl(110), 14) == 0) cs.row();
+                        if(++i % (int)Math.min(Core.graphics.getWidth() / Scl.scl(110), 14) == 0) cs.row();
                     }
                 }).grow();
                 d.addCloseButton();

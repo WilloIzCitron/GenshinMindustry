@@ -25,7 +25,7 @@ import static mindustry.Vars.*;
 
 public class JoinDialog extends BaseDialog{
     //TODO unused
-    Seq<Host> commmunityHosts = new Seq<>();
+    Seq<Host> communityHosts = new Seq<>();
     Seq<Server> servers = new Seq<>();
     Dialog add;
     Server renaming;
@@ -360,12 +360,13 @@ public class JoinDialog extends BaseDialog{
     }
 
     void refreshCommunity(){
-        commmunityHosts.clear();
+        communityHosts.clear();
         int cur = refreshes;
 
         global.clear();
         global.background(null);
-        for(ServerGroup group : defaultServers){
+        for(int i = 0; i < defaultServers.size; i ++){
+            ServerGroup group = defaultServers.get((i + defaultServers.size/2) % defaultServers.size);
             boolean hidden = group.hidden();
             if(hidden && !showHidden){
                 continue;
@@ -381,7 +382,7 @@ public class JoinDialog extends BaseDialog{
                     if(refreshes != cur) return;
                     res.port = resport;
 
-                    commmunityHosts.add(res);
+                    communityHosts.add(res);
 
                     //add header
                     if(groupTable[0] == null){
@@ -512,7 +513,7 @@ public class JoinDialog extends BaseDialog{
 
     void safeConnect(String ip, int port, int version){
         if(version != Version.build && Version.build != -1 && version != -1){
-            ui.showInfo("[scarlet]" + (version > Version.build ? KickReason.clientOutdated : KickReason.serverOutdated).toString() + "\n[]" +
+            ui.showInfo("[scarlet]" + (version > Version.build ? KickReason.clientOutdated : KickReason.serverOutdated) + "\n[]" +
                 Core.bundle.format("server.versions", Version.build, version));
         }else{
             connect(ip, port);
