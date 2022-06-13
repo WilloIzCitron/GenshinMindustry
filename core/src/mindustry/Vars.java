@@ -170,6 +170,7 @@ public class Vars implements Loadable{
     public static boolean headless;
     /** whether steam is enabled for this game */
     public static boolean steam;
+
     /** whether to clear sector saves when landing */
     public static boolean clearSectors = false;
     /** whether any light rendering is enabled */
